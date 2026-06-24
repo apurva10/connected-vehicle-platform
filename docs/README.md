@@ -12,11 +12,7 @@ This project implements a modular automotive connectivity service designed for L
 
 ## Build
 
-```bash
-cmake -S . -B build
-cmake --build build -j2
-ctest --test-dir build --output-on-failure
-```
+See the [project README](../README.md) for clone-and-build instructions. The project uses CMake FetchContent and does not rely on local machine paths.
 
 ## Configuration
 

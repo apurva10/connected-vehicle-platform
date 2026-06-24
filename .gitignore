@@ -1,6 +1,11 @@
 # Build files
 build/
+build-*/
 cmake-build-*/
+_deps/
+
+# Runtime output
+logs/
 
 # Executables
 *.exe
@@ -12,9 +17,17 @@ cmake-build-*/
 
 # IDE files
 .vscode/
+.idea/
 
 # Logs
 *.log
 
+# Environment and secrets
+.env
+.env.*
+
 # Temporary files
 *.tmp
+
+# Generated build stamp (sources under generated/ are committed)
+generated/.stamp
