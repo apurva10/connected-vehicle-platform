@@ -13,7 +13,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build cppcheck clang-tidy
+          sudo apt-get install -y cmake ninja-build cppcheck clang-tidy libpaho-mqtt-dev libpaho-mqttpp-dev
       - name: Configure
         run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
       - name: Build
