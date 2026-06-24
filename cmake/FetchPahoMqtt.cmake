@@ -1,30 +1,25 @@
 # Fetch and build Eclipse Paho MQTT C/C++ libraries when system packages are unavailable.
+# Uses the paho.mqtt.cpp bundled paho.mqtt.c submodule so both libraries share one CMake project.
 
 include(FetchContent)
 
-set(PAHO_BUILD_STATIC ON CACHE BOOL "" FORCE)
+set(PAHO_WITH_MQTT_C ON CACHE BOOL "" FORCE)
 set(PAHO_WITH_SSL OFF CACHE BOOL "" FORCE)
-set(PAHO_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+set(PAHO_BUILD_STATIC OFF CACHE BOOL "" FORCE)
+set(PAHO_BUILD_SHARED ON CACHE BOOL "" FORCE)
+set(PAHO_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+set(PAHO_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(PAHO_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(PAHO_BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
-set(PAHO_HIGH_PERFORMANCE OFF CACHE BOOL "" FORCE)
-
-FetchContent_Declare(
-  paho_mqtt_c
-  GIT_REPOSITORY https://github.com/eclipse/paho.mqtt.c.git
-  GIT_TAG v1.3.13
-  GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(paho_mqtt_c)
-
-set(PAHO_MQTTPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(PAHO_MQTTPP_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(PAHO_MQTTPP_STATIC ON CACHE BOOL "" FORCE)
+set(PAHO_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+set(PAHO_ENABLE_CPACK OFF CACHE BOOL "" FORCE)
 
 FetchContent_Declare(
   paho_mqtt_cpp
   GIT_REPOSITORY https://github.com/eclipse/paho.mqtt.cpp.git
   GIT_TAG v1.3.2
   GIT_SHALLOW TRUE
+  GIT_SUBMODULES "src/externals/paho-mqtt-c"
 )
 FetchContent_MakeAvailable(paho_mqtt_cpp)
 
