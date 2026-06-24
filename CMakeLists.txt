@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(CTest)
 include(FetchContent)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
@@ -22,8 +23,10 @@ set(GENERATED_STUB_DIR ${GENERATED_ROOT_DIR}/stub)
 set(GENERATED_SRC_GEN_DIR ${GENERATED_ROOT_DIR}/src-gen/v1)
 
 file(GLOB FIDL_FILES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/fidl/*.fidl)
-find_program(COMMONAPI_CORE_GENERATOR NAMES commonapi-core-generator-linux-x86_64 REQUIRED)
-find_program(COMMONAPI_SOMEIP_GENERATOR NAMES commonapi-someip-generator-linux-x86_64 REQUIRED)
+find_package(CommonAPI REQUIRED)
+if(NOT COMMONAPI_CORE_GENERATOR OR NOT COMMONAPI_SOMEIP_GENERATOR)
+  message(FATAL_ERROR "CommonAPI generators were not found. Install commonapi-core-generator-linux-x86_64 and commonapi-someip-generator-linux-x86_64 or provide them on PATH.")
+endif()
 
 file(MAKE_DIRECTORY
   ${GENERATED_COMMONAPI_DIR}
