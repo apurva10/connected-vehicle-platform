@@ -1,0 +1,17 @@
+package diagnostics
+
+interface DiagnosticsService {
+    version { major 1 minor 0 }
+
+    method publishDiagnostic {
+        in {
+            String code
+            String severity
+            String detail
+        }
+        out {
+            Boolean success
+            String message
+        }
+    }
+}

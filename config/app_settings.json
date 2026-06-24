@@ -1,0 +1,5 @@
+{
+  "projectName": "Connected Vehicle Platform",
+  "languageStandard": "c++20",
+  "buildType": "Release"
+}

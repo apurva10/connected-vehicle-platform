@@ -1,0 +1,40 @@
+import "platform:/plugin/org.genivi.commonapi.someip/deployment/CommonAPI-SOMEIP_deployment_spec.fdepl"
+import "Connectivity.fidl"
+import "Diagnostics.fidl"
+import "VehicleSignal.fidl"
+
+define org.genivi.commonapi.someip.deployment for interface connectivity.ConnectivityService {
+    SomeIpServiceID = 0x1234
+
+    method connect {
+        SomeIpMethodID = 0x1001
+    }
+
+    method disconnect {
+        SomeIpMethodID = 0x1002
+    }
+}
+
+define org.genivi.commonapi.someip.deployment for interface diagnostics.DiagnosticsService {
+    SomeIpServiceID = 0x1235
+
+    method publishDiagnostic {
+        SomeIpMethodID = 0x1003
+    }
+}
+
+define org.genivi.commonapi.someip.deployment for interface vehicle.VehicleSignalService {
+    SomeIpServiceID = 0x1236
+
+    method getSpeed {
+        SomeIpMethodID = 0x1004
+    }
+
+    method getBatteryVoltage {
+        SomeIpMethodID = 0x1005
+    }
+
+    broadcast SignalChanged {
+        SomeIpEventID = 0x2001
+    }
+}

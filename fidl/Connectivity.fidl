@@ -1,0 +1,24 @@
+package connectivity
+
+interface ConnectivityService {
+    version { major 1 minor 0 }
+
+    method connect {
+        in {
+            String brokerHost
+            UInt16 brokerPort
+            String clientId
+        }
+        out {
+            Boolean success
+            String message
+        }
+    }
+
+    method disconnect {
+        out {
+            Boolean success
+            String message
+        }
+    }
+}

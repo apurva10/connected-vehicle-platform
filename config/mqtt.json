@@ -1,0 +1,7 @@
+{
+  "broker": "tcp://localhost:1883",
+  "client_id": "ECU_001",
+  "telemetry_topic": "vehicle/ECU_001/telemetry",
+  "command_topic": "vehicle/ECU_001/commands",
+  "qos": 1
+}

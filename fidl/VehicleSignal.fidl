@@ -1,0 +1,24 @@
+package vehicle
+
+interface VehicleSignalService {
+    version { major 1 minor 0 }
+
+    method getSpeed {
+        out {
+            UInt16 speed
+        }
+    }
+
+    method getBatteryVoltage {
+        out {
+            Double voltage
+        }
+    }
+
+    broadcast SignalChanged {
+        out {
+            UInt16 speed
+            Double battery
+        }
+    }
+}

@@ -1,0 +1,30 @@
+{
+  "unicast": ["127.0.0.1"],
+  "logging": {
+    "level": "debug",
+    "console": "true"
+  },
+  "applications": [
+    {
+      "name": "ConnectivityService",
+      "id": "0x1001",
+      "instance_id": "0x01",
+      "type": "server"
+    },
+    {
+      "name": "VehicleClient",
+      "id": "0x1002",
+      "instance_id": "0x02",
+      "type": "client"
+    }
+  ],
+  "services": [
+    {
+      "service": "0x1234",
+      "instance": "0x5678",
+      "reliable": "30510",
+      "unreliable": "30509"
+    }
+  ],
+  "routing": "ConnectivityService"
+}
