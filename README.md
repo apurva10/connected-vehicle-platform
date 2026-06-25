@@ -1,4 +1,4 @@
-# Connected Vehicle Platform
+# Connected Vehicle Platform - Work in progress
 
 Modular automotive connectivity service for Linux-based vehicle ECUs. The repository is self-contained: clone, configure with CMake, and build without machine-specific paths or pre-installed third-party libraries.
 

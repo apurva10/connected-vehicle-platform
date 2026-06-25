@@ -9,6 +9,11 @@
 namespace cvp {
 namespace {
 
+constexpr double kSampleSpeed{80.0};
+constexpr double kSampleRpm{2500.0};
+constexpr double kSampleBattery{12.6};
+constexpr double kSampleFuel{70.0};
+
 std::string currentTimestamp() {
   const auto now = std::chrono::system_clock::now();
   const auto time = std::chrono::system_clock::to_time_t(now);
@@ -33,7 +38,8 @@ TelemetryManager::TelemetryManager(std::string vehicle_id, std::shared_ptr<IMqtt
     : vehicle_id_(std::move(vehicle_id)), mqtt_client_(std::move(mqtt_client)) {}
 
 TelemetrySample TelemetryManager::generateSample() const {
-  return TelemetrySample{vehicle_id_, currentTimestamp(), 80.0, 2500.0, 12.6, 70.0};
+  return TelemetrySample{vehicle_id_, currentTimestamp(),
+                         kSampleSpeed, kSampleRpm, kSampleBattery, kSampleFuel};
 }
 
 std::string TelemetryManager::serialize(const TelemetrySample& sample) const {

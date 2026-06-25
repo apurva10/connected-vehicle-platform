@@ -9,6 +9,9 @@
 namespace cvp {
 namespace {
 
+constexpr int kMqttKeepAliveSeconds{20};
+constexpr int kMqttOperationTimeoutSec{5};
+
 class PahoMqttBackend : public IMqttBackend {
  public:
   bool connect(std::string_view broker, std::string_view client_id) override {
@@ -20,10 +23,10 @@ class PahoMqttBackend : public IMqttBackend {
     try {
       client_ = std::make_unique<mqtt::async_client>(std::string{broker}, std::string{client_id});
       mqtt::connect_options options;
-      options.set_keep_alive_interval(20);
+      options.set_keep_alive_interval(kMqttKeepAliveSeconds);
       options.set_clean_session(true);
       auto tok = client_->connect(options);
-      tok->wait_for(std::chrono::seconds{5});
+      tok->wait_for(std::chrono::seconds{kMqttOperationTimeoutSec});
       connected_ = client_->is_connected();
       return connected_;
     } catch (const std::exception&) {
@@ -37,7 +40,7 @@ class PahoMqttBackend : public IMqttBackend {
     try {
       if (client_) {
         auto tok = client_->disconnect();
-        tok->wait_for(std::chrono::seconds{5});
+        tok->wait_for(std::chrono::seconds{kMqttOperationTimeoutSec});
       }
     } catch (const std::exception&) {
       connected_ = false;
@@ -56,7 +59,7 @@ class PahoMqttBackend : public IMqttBackend {
 
     try {
       auto tok = client_->publish(std::string{topic}, std::string{payload}, static_cast<int>(qos), false);
-      tok->wait_for(std::chrono::seconds{5});
+      tok->wait_for(std::chrono::seconds{kMqttOperationTimeoutSec});
       return tok->get_return_code() == mqtt::SUCCESS;
     } catch (const std::exception&) {
       return false;
@@ -71,7 +74,7 @@ class PahoMqttBackend : public IMqttBackend {
 
     try {
       auto tok = client_->subscribe(std::string{topic}, static_cast<int>(qos));
-      tok->wait_for(std::chrono::seconds{5});
+      tok->wait_for(std::chrono::seconds{kMqttOperationTimeoutSec});
       return tok->get_return_code() == mqtt::SUCCESS;
     } catch (const std::exception&) {
       return false;

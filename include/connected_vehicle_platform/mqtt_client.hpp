@@ -7,12 +7,16 @@
 
 namespace cvp {
 
+// ── MqttClient compile-time constants ────────────────────────────────────────
+inline constexpr int kDefaultQos{1};
+// ─────────────────────────────────────────────────────────────────────────────
+
 struct MqttConfig {
   std::string broker;
   std::string client_id;
   std::string telemetry_topic;
   std::string command_topic;
-  int qos{1};
+  int qos{kDefaultQos};
 };
 
 class IMqttBackend {
@@ -31,8 +35,8 @@ class IMqttClient {
   virtual bool connect() = 0;
   virtual bool disconnect() = 0;
   virtual bool reconnect() = 0;
-  virtual bool publish(std::string_view topic, std::string_view payload, int qos = 1) = 0;
-  virtual bool subscribe(std::string_view topic, int qos = 1) = 0;
+  virtual bool publish(std::string_view topic, std::string_view payload, int qos = kDefaultQos) = 0;
+  virtual bool subscribe(std::string_view topic, int qos = kDefaultQos) = 0;
   virtual bool isConnected() const = 0;
   virtual const MqttConfig& config() const = 0;
 };
@@ -45,8 +49,8 @@ class MqttClient : public IMqttClient {
   bool connect() override;
   bool disconnect() override;
   bool reconnect() override;
-  bool publish(std::string_view topic, std::string_view payload, int qos = 1) override;
-  bool subscribe(std::string_view topic, int qos = 1) override;
+  bool publish(std::string_view topic, std::string_view payload, int qos = kDefaultQos) override;
+  bool subscribe(std::string_view topic, int qos = kDefaultQos) override;
   bool isConnected() const override;
   const MqttConfig& config() const override;
 

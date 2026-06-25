@@ -5,6 +5,12 @@
 
 namespace cvp {
 
+namespace {
+constexpr int kReconnectDelaySec{2};
+constexpr int kPublishIntervalSec{5};
+}  // namespace
+
+
 ConnectivityService::ConnectivityService(std::shared_ptr<AuthClient> auth_client,
                                          std::shared_ptr<IMqttClient> mqtt_client,
                                          std::shared_ptr<TelemetryManager> telemetry_manager,
@@ -77,6 +83,20 @@ bool ConnectivityService::running() const noexcept {
 
 void ConnectivityService::runLoop(std::stop_token stop_token) {
   while (!stop_token.stop_requested()) {
+    if (auth_client_ && (!auth_client_->isTokenValid() || auth_client_->token().empty())) {
+      state_.store(ServiceState::Authenticating);
+      logger_->warning("Token is empty or invalid; attempting to refresh token");
+      if (auth_client_->refreshToken() && !auth_client_->token().empty()) {
+        logger_->info("Token refreshed successfully");
+        state_.store(ServiceState::Publishing);
+      } else {
+        logger_->error("Token refresh failed; retrying");
+        state_.store(ServiceState::Disconnected);
+        std::this_thread::sleep_for(std::chrono::seconds(kReconnectDelaySec));
+        continue;
+      }
+    }
+
     if (!mqtt_client_ || !mqtt_client_->isConnected()) {
       state_.store(ServiceState::Reconnecting);
       logger_->warning("Connection lost; attempting reconnect");
@@ -85,7 +105,7 @@ void ConnectivityService::runLoop(std::stop_token stop_token) {
         logger_->info("Reconnected successfully");
       } else {
         state_.store(ServiceState::Disconnected);
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::this_thread::sleep_for(std::chrono::seconds(kReconnectDelaySec));
         continue;
       }
     }
@@ -94,7 +114,7 @@ void ConnectivityService::runLoop(std::stop_token stop_token) {
       logger_->warning("Telemetry publish queued for later");
     }
 
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::this_thread::sleep_for(std::chrono::seconds(kPublishIntervalSec));
   }
 
   if (mqtt_client_) {

@@ -7,6 +7,10 @@
 
 namespace cvp {
 
+// ── Logger compile-time constants ────────────────────────────────────────────
+inline constexpr std::string_view kDefaultLogPath{"logs/vehicle.log"};
+// ─────────────────────────────────────────────────────────────────────────────
+
 enum class LogLevel {
   Trace,
   Debug,
@@ -18,7 +22,7 @@ enum class LogLevel {
 
 class Logger {
  public:
-  explicit Logger(std::string log_path = "logs/vehicle.log");
+  explicit Logger(std::string log_path = std::string{kDefaultLogPath});
 
   void log(LogLevel level, std::string_view message,
            std::source_location location = std::source_location::current()) const;

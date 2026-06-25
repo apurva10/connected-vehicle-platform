@@ -13,6 +13,9 @@
 namespace cvp {
 namespace {
 
+constexpr std::string_view kTelemetryTopic{"vehicle/telemetry"};
+constexpr std::string_view kCommandTopic{"vehicle/commands"};
+
 struct SomeipHeader {
   std::uint16_t service_id;
   std::uint16_t method_id;
@@ -22,8 +25,9 @@ struct SomeipHeader {
 }  // namespace
 
 SomeipClient::SomeipClient(SomeipConfig config) : someip_config_(std::move(config)) {
-  mqtt_config_ = {someip_config_.host, someip_config_.client_id, "vehicle/telemetry",
-                  "vehicle/commands", 1};
+  mqtt_config_ = {someip_config_.host, someip_config_.client_id,
+                  std::string{kTelemetryTopic}, std::string{kCommandTopic},
+                  kDefaultQos};
 }
 
 bool SomeipClient::connect() {
@@ -42,13 +46,13 @@ bool SomeipClient::connect() {
   address.sin_port = htons(someip_config_.port);
   if (inet_pton(AF_INET, someip_config_.host.c_str(), &address.sin_addr) != 1) {
     ::close(socket_fd_);
-    socket_fd_ = -1;
+    socket_fd_ = kInvalidSocketFd;
     return false;
   }
 
   if (::connect(socket_fd_, reinterpret_cast<sockaddr*>(&address), sizeof(address)) != 0) {
     ::close(socket_fd_);
-    socket_fd_ = -1;
+    socket_fd_ = kInvalidSocketFd;
     return false;
   }
 
@@ -61,7 +65,7 @@ bool SomeipClient::disconnect() {
   if (socket_fd_ >= 0) {
     ::close(socket_fd_);
   }
-  socket_fd_ = -1;
+  socket_fd_ = kInvalidSocketFd;
   connected_ = false;
   return true;
 }
@@ -102,7 +106,7 @@ bool SomeipClient::isConnected() const {
 }
 
 bool SomeipClient::publish(std::string_view payload) {
-  return publish("", payload, 1);
+  return publish("", payload, kDefaultQos);
 }
 
 const MqttConfig& SomeipClient::config() const {

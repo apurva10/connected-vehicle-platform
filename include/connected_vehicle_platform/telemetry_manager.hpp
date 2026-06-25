@@ -10,13 +10,17 @@
 
 namespace cvp {
 
+// ── TelemetryManager compile-time constants ───────────────────────────────────
+inline constexpr double kDefaultTelemetryValue{0.0};
+// ─────────────────────────────────────────────────────────────────────────────
+
 struct TelemetrySample {
   std::string vehicle_id;
   std::string timestamp;
-  double speed{0.0};
-  double rpm{0.0};
-  double battery{0.0};
-  double fuel{0.0};
+  double speed{kDefaultTelemetryValue};
+  double rpm{kDefaultTelemetryValue};
+  double battery{kDefaultTelemetryValue};
+  double fuel{kDefaultTelemetryValue};
 
   std::string serialize() const;
 };

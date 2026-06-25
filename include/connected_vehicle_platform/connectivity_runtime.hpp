@@ -2,13 +2,20 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 namespace cvp {
 
+// ── ConnectivityRuntime compile-time constants ───────────────────────────────
+inline constexpr std::string_view kDefaultBrokerHost{"localhost"};
+inline constexpr std::uint16_t    kDefaultBrokerPort{1883};
+inline constexpr std::string_view kDefaultClientId{"cvp-client"};
+// ─────────────────────────────────────────────────────────────────────────────
+
 struct ConnectivityConfig {
-  std::string brokerHost{"localhost"};
-  std::uint16_t brokerPort{1883};
-  std::string clientId{"cvp-client"};
+  std::string   brokerHost{kDefaultBrokerHost};
+  std::uint16_t brokerPort{kDefaultBrokerPort};
+  std::string   clientId{kDefaultClientId};
 };
 
 class ConnectivityRuntime {

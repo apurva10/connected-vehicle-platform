@@ -23,6 +23,14 @@
 
 namespace {
 
+constexpr std::string_view kDemoLogPath{"logs/connected_vehicle.log"};
+constexpr std::string_view kDemoVehicleSecret{"secret123"};
+constexpr unsigned short   kDemoSomeipPort{41002};
+constexpr int              kDemoTokenTtlSec{3600};
+constexpr int              kDemoRunDurationSec{6};
+constexpr std::size_t      kCloudListenerBufSize{2048};
+constexpr int              kSomeipHeaderSize{8};
+
 class DemoAuthBackend : public cvp::IAuthBackend {
  public:
   cvp::AuthResponse authenticate(const cvp::AuthRequest& request) override {
@@ -30,7 +38,7 @@ class DemoAuthBackend : public cvp::IAuthBackend {
       return {};
     }
 
-    return {"jwt-demo-token", std::chrono::seconds{3600}};
+    return {"jwt-demo-token", std::chrono::seconds{kDemoTokenTtlSec}};
   }
 };
 
@@ -54,11 +62,11 @@ void runCloudListener(unsigned short port) {
   std::cout << "[Cloud] listening for SOME/IP traffic on localhost:" << port << std::endl;
   const int client_fd = accept(server_fd, nullptr, nullptr);
   if (client_fd >= 0) {
-    std::array<char, 2048> buffer{};
+    std::array<char, kCloudListenerBufSize> buffer{};
     const auto received = recv(client_fd, buffer.data(), buffer.size(), 0);
     if (received > 0) {
-      const auto payload_size = std::max<int>(0, received - 8);
-      const auto payload_offset = std::min<int>(8, received);
+      const auto payload_size = std::max<int>(0, received - kSomeipHeaderSize);
+      const auto payload_offset = std::min<int>(kSomeipHeaderSize, received);
       std::string payload;
       if (payload_size > 0) {
         payload.assign(buffer.data() + payload_offset, static_cast<std::size_t>(payload_size));
@@ -73,11 +81,13 @@ void runCloudListener(unsigned short port) {
 }  // namespace
 
 int main() {
-  cvp::SomeipConfig someip_config{"127.0.0.1", 41002, 0x1234, 0x0001, "ECU_001"};
-  auto logger = std::make_shared<cvp::Logger>("logs/connected_vehicle.log");
+  cvp::SomeipConfig someip_config{std::string{cvp::kDefaultSomeipHost}, kDemoSomeipPort,
+                                   cvp::kDefaultServiceId, cvp::kDefaultMethodId,
+                                   std::string{cvp::kDefaultEcuClientId}};
+  auto logger = std::make_shared<cvp::Logger>(std::string{kDemoLogPath});
   auto auth_backend = std::make_shared<DemoAuthBackend>();
   auto auth_client = std::make_shared<cvp::AuthClient>(auth_backend, someip_config.client_id,
-                                                       "secret123");
+                                                       std::string{kDemoVehicleSecret});
   auto someip_client = std::make_shared<cvp::SomeipClient>(someip_config);
   auto telemetry_manager = std::make_shared<cvp::TelemetryManager>(someip_config.client_id,
                                                                      someip_client);
@@ -90,7 +100,7 @@ int main() {
     return 1;
   }
 
-  std::this_thread::sleep_for(std::chrono::seconds(6));
+  std::this_thread::sleep_for(std::chrono::seconds(kDemoRunDurationSec));
   service.stop();
   cloud_listener.join();
   return 0;
